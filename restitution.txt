@@ -1,0 +1,87 @@
+#!/usr/bin/python3
+
+import os
+import glob
+import shutil
+import time
+import gzip
+
+
+path = r"/chemin de votre dossier ou il y aura l'archive pour renommer celle ci/"
+
+#cherche dans "path" des fichiers ayant pour nom "backup" ou format zip
+pattern = path + "BackupFINAL" + "*.zip" 
+#liste le résultat du "pattern"
+result = glob.glob(pattern)
+
+
+
+for file_name in result:
+    old_name = file_name
+    new_name = path + 'bckpfinal' + ".zip" #modifier le nom ici par celui voulu
+    os.rename(old_name, new_name)
+
+
+
+res = glob.glob(path + "bckpfinal" + "*.zip" )
+for name in res:
+    print(name)
+    
+#arrivé ici notre archive est renommé en "backupfinal"
+
+shutil.move('/indiquer votre chemin initial pour le déplacement','/emplacement de là ou vous souhaiter que l'archive soit/')
+time.sleep(2)
+
+shutil.unpack_archive('/chemin de votre archive/bckpfinal.zip', '/home/username/Bureau/', 'zip')
+time.sleep(2)
+os.remove('/home/username/Bureau/bckpfinal.zip')
+shutil.move('/home/username/Bureau/home/wordpress/Bureau/BACKUP/BACKUPWP.zip', '/home/username/Bureau/bckpwp')
+shutil.move('/home/username/Bureau/home/wordpress/Bureau/BACKUP/wordpress.sql.gz', '/home/username/Bureau/bckpbdd')
+time.sleep(2)
+shutil.rmtree('/home/username/Bureau/home')
+shutil.unpack_archive('/home/username/Bureau/bckpwp/BACKUPWP.zip', '/home/username/Bureau/bckpwp', 'zip')
+
+time.sleep(2)
+dir_name = '/home/username/Bureau/bckpbdd/'
+
+
+def gz_extract(directory):
+    extension = ".gz"
+    os.chdir(directory)
+    for item in os.listdir(directory):  # Parcours les elements dans le dir_name
+        if item.endswith(extension):  # vérif si fichier avec extension ".gz"
+            gz_name = os.path.abspath(item)  # Obtenir les chemins complet
+            file_name = (os.path.basename(gz_name)).rsplit('.', 1)[0]  # Obtenir le nom du fichier
+            with gzip.open(gz_name, "rb") as f_in, open(file_name, "wb") as f_out:
+                shutil.copyfileobj(f_in, f_out)
+            os.remove(gz_name)  # supprime le fichier ".gz"
+
+
+gz_extract(dir_name)
+time.sleep(2)
+print("Fichier décompresser dans bckpbdd et bckpwp good job, lets go pour le final")
+
+os.remove('/home/username/Bureau/bckpwp/BACKUPWP.zip')
+
+source_folderwp = r"/home/wordpress/Bureau/bckpwp/"
+destination_folderwp = r"/var/www/html/wordpress/"
+
+# fetch all files
+for file_name in os.listdir(source_folderwp):
+     # construct full file path
+     source = source_folderwp + file_name
+     destination = destination_folderwp + file_name
+     # copy only files
+     if os.path.isfile(source):
+         shutil.copyfile(source, destination)
+         print('copier', file_name)
+time.sleep(2)
+print("On patiente quelques instants pour faire un peu le ménage on est pas de gros dégueulasse quand même =D ")
+time.sleep(2)
+delbckpw = '/home/username/Bureau/bckpwp'
+shutil.rmtree(delbckpw)
+time.sleep(1)
+creatbckpwp = '/home/username/Bureau/bckpwp'
+os.mkdir(creatbckpwp)
+
+
